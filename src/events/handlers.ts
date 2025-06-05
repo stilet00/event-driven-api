@@ -1,4 +1,5 @@
 import { mockUsers, User as MockUser } from "../data/mockUsers";
+import { log } from "../logger";
 import eventBus from "./eventBus";
 
 // Тип для пользователя
@@ -17,7 +18,7 @@ let nextId = mockUsers.reduce((max, u) => {
 function heavyStepEvent(stepNumber: number, delay: number): Promise<void> {
   return new Promise(resolve => {
     setTimeout(() => {
-      console.log(`Event-driven: шаг №${stepNumber} выполнен`);
+      log("DEBUG", `Event-driven: шаг №${stepNumber} выполнен`);
       resolve();
     }, delay);
   });
@@ -41,13 +42,12 @@ eventBus.on(
 );
 
 eventBus.on("HEAVY_CREATE_USER", async (name: string) => {
-  console.log("Event-driven: начали тяжёлую цепочку для", name);
+  log("INFO", `Event-driven: начали тяжёлую цепочку для ${name}`);
 
   for (let step = 1; step <= 10; step++) {
     await heavyStepEvent(step, 100); // каждый шаг 100 мс
   }
-
-  console.log(`Event-driven: тяжёлая цепочка для "${name}" завершена`);
+  log("INFO", `Event-driven: тяжёлая цепочка для "${name}" завершена`);
   // В реальном приложении здесь можно сделать дополнительные действия,
   // например: обновить какой-то статус в БД, уведомить других подписчиков и т. д.
 });

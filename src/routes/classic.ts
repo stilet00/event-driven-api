@@ -1,6 +1,6 @@
-// src/routes/classic.ts
 import { Router, RequestHandler } from "express";
 import { mockUsers, User as MockUser } from "../data/mockUsers";
+import { log } from "../logger";
 
 interface User {
   id: string;
@@ -19,7 +19,7 @@ const router = Router();
 function heavyStep(stepNumber: number, delay: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(() => {
-      console.log(`Classic: выполнен шаг №${stepNumber}`);
+      log("DEBUG", `Classic: выполнен шаг №${stepNumber}`);
       resolve();
     }, delay);
   });
@@ -50,7 +50,7 @@ const createUser: RequestHandler = async (req, res, next) => {
       return;
     }
     const start = Date.now();
-    console.log("Classic: начали создание");
+    log("DEBUG", "Classic: начали создание");
     for (let step = 1; step <= 10; step++) {
       // Здесь delay = 100 мс (можно увеличить или сделать динамическим)
       await heavyStep(step, 100);
@@ -59,7 +59,7 @@ const createUser: RequestHandler = async (req, res, next) => {
     const newUser: User = { id: nextId.toString(), name };
     users.push(newUser);
     nextId++;
-    console.log(`Classic: закончили все шаги за ${Date.now() - start} мс`);
+    log("INFO", `Classic: закончили все шаги за ${Date.now() - start} мс`);
     res.status(201).json(newUser);
     return;
   } catch (err) {

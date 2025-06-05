@@ -1,7 +1,7 @@
-// src/server.ts
 import express, { Application } from "express";
 import classicRouter from "./routes/classic";
 import eventRouter from "./routes/event"
+import { log } from "./logger";
 
 const app: Application = express();
 
@@ -15,6 +15,6 @@ app.use("/event", eventRouter);
 // Старт сервера
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
-  console.log(`🚀 Classic REST at http://localhost:${PORT}/classic`);
-  console.log(`🚀 Event-driven REST at http://localhost:${PORT}/event`);
+  log("INFO", `🚀 Classic REST at http://localhost:${PORT}/classic`);
+  log("INFO", `🚀 Event-driven REST at http://localhost:${PORT}/event`);
 });
