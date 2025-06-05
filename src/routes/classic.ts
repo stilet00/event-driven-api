@@ -1,15 +1,29 @@
 // src/routes/classic.ts
 import { Router, RequestHandler } from "express";
+import { mockUsers, User as MockUser } from "../data/mockUsers";
 
 interface User {
   id: string;
   name: string;
 }
 
-const users: User[] = [];
-let nextId = 1;
+const users: MockUser[] = mockUsers.map(u => ({ id: u.id, name: u.name }));
+
+let nextId = mockUsers.reduce((max, u) => {
+  const num = Number(u.id);
+  return isNaN(num) ? max : Math.max(max, num);
+}, 0) + 1;
 
 const router = Router();
+
+function heavyStep(stepNumber: number, delay: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log(`Classic: выполнен шаг №${stepNumber}`);
+      resolve();
+    }, delay);
+  });
+}
 
 /**
  * GET /classic/users
@@ -27,7 +41,7 @@ const getAllUsers: RequestHandler = (req, res, next) => {
  * POST /classic/users
  * Ожидаем body вида { name: string }
  */
-const createUser: RequestHandler = (req, res, next) => {
+const createUser: RequestHandler = async (req, res, next) => {
   try {
     const { name } = req.body as { name?: unknown };
 
@@ -35,11 +49,17 @@ const createUser: RequestHandler = (req, res, next) => {
       res.status(400).json({ error: "Поле name обязательно и должно быть строкой" });
       return;
     }
+    const start = Date.now();
+    console.log("Classic: начали создание");
+    for (let step = 1; step <= 10; step++) {
+      // Здесь delay = 100 мс (можно увеличить или сделать динамическим)
+      await heavyStep(step, 100);
+    }
 
     const newUser: User = { id: nextId.toString(), name };
     users.push(newUser);
     nextId++;
-
+    console.log(`Classic: закончили все шаги за ${Date.now() - start} мс`);
     res.status(201).json(newUser);
     return;
   } catch (err) {

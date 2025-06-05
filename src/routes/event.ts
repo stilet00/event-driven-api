@@ -47,7 +47,9 @@ const createUserEvent: RequestHandler = (req, res, next) => {
         return;
       }
       res.status(201).json(newUser);
+      eventBus.emit("HEAVY_CREATE_USER", name);
     });
+    
     return;
   } catch (err) {
     next(err);

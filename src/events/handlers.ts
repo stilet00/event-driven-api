@@ -1,3 +1,4 @@
+import { mockUsers, User as MockUser } from "../data/mockUsers";
 import eventBus from "./eventBus";
 
 // Тип для пользователя
@@ -6,9 +7,21 @@ export interface User {
   name: string;
 }
 
-// Хранилище в памяти для event-driven варианта
-const users: User[] = [];
-let nextId = 1;
+const users: MockUser[] = mockUsers.map(u => ({ id: u.id, name: u.name }));
+
+let nextId = mockUsers.reduce((max, u) => {
+  const num = Number(u.id);
+  return isNaN(num) ? max : Math.max(max, num);
+}, 0) + 1;
+
+function heavyStepEvent(stepNumber: number, delay: number): Promise<void> {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      console.log(`Event-driven: шаг №${stepNumber} выполнен`);
+      resolve();
+    }, delay);
+  });
+}
 
 // Обработчик для получения списка пользователей
 eventBus.on("GET_USERS", (callback: (err: Error | null, data?: User[]) => void) => {
@@ -26,3 +39,15 @@ eventBus.on(
     callback(null, newUser);
   }
 );
+
+eventBus.on("HEAVY_CREATE_USER", async (name: string) => {
+  console.log("Event-driven: начали тяжёлую цепочку для", name);
+
+  for (let step = 1; step <= 10; step++) {
+    await heavyStepEvent(step, 100); // каждый шаг 100 мс
+  }
+
+  console.log(`Event-driven: тяжёлая цепочка для "${name}" завершена`);
+  // В реальном приложении здесь можно сделать дополнительные действия,
+  // например: обновить какой-то статус в БД, уведомить других подписчиков и т. д.
+});
