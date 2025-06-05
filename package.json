@@ -1,0 +1,24 @@
+{
+  "name": "event-driven-api",
+  "version": "1.0.0",
+  "description": "test project for Node event driven architecture",
+  "main": "server.js",
+  "scripts": {
+    "test": "test",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "events": "^3.3.0",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.2",
+    "@types/node": "^22.15.29",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
+  }
+}
